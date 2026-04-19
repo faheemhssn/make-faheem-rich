@@ -539,8 +539,8 @@
   </div>
 
   <div class="cta-area">
-    <button class="btn-main" onclick="openModal('$20')">Donate Now — Make History</button>
-    <button class="btn-ghost" onclick="openModal('$5')">I can only spare a little</button>
+    <a href="https://buy.stripe.com/28E9AS9cn9fk80e94UfrW09" target="_blank" class="btn-main" style="text-decoration:none;display:inline-block;">Donate Now — Make History</a>
+    <a href="https://buy.stripe.com/9B68wObkv4Z4bcq80QfrW08" target="_blank" class="btn-ghost" style="text-decoration:none;display:inline-block;">I can only spare a little ($5)</a>
   </div>
 </section>
 
@@ -605,36 +605,33 @@
 <div class="donate-tiers">
   <div class="section-label" style="text-align:center;margin-bottom:2rem;">Choose Your Tier of Generosity</div>
   <div class="tiers-grid">
-    <div class="tier" onclick="openModal('$5')">
+    <a href="https://buy.stripe.com/9B68wObkv4Z4bcq80QfrW08" target="_blank" class="tier" style="text-decoration:none;display:block;">
       <div class="tier-amount">$5</div>
       <div class="tier-name">The Sympathizer</div>
       <div class="tier-perk">You believe in the cause but also need groceries. We respect that. Every dollar counts.</div>
-    </div>
-    <div class="tier" onclick="openModal('$20')">
+    </a>
+    <a href="https://buy.stripe.com/28E9AS9cn9fk80e94UfrW09" target="_blank" class="tier" style="text-decoration:none;display:block;">
       <div class="tier-amount">$20</div>
       <div class="tier-name">The Faithful</div>
       <div class="tier-perk">You're skipping one dinner out. A small sacrifice for a generational legacy. Well done.</div>
-    </div>
-    <div class="tier" onclick="openModal('$100')">
+    </a>
+    <a href="https://buy.stripe.com/00w8wO3S3crwa8mdlafrW0a" target="_blank" class="tier" style="text-decoration:none;display:block;">
       <div class="tier-amount">$100</div>
       <div class="tier-name">The Devoted</div>
       <div class="tier-perk">You are the backbone of this movement. Faheem will remember your name. Probably.</div>
-    </div>
-    <div class="tier" onclick="openModal('$1,000')">
+    </a>
+    <a href="https://buy.stripe.com/eVq6oG60b0IOeoCch6frW0b" target="_blank" class="tier" style="text-decoration:none;display:block;">
       <div class="tier-amount">$1K</div>
       <div class="tier-name">The Visionary</div>
       <div class="tier-perk">At this level, you don't just believe — you invest in civilization. A legend is born.</div>
-    </div>
+    </a>
   </div>
 </div>
 
 <section class="final-cta">
   <h2>The Billion<br>Starts <em>With You.</em></h2>
   <p class="final-sub">One click. One billionaire. One world changed forever.</p>
-  <button class="btn-main" onclick="openModal('$20')">Yes, I Want to Make Faheem Rich</button>
-  <div class="disclaimer">
-    This campaign is satire created for entertainment purposes. No actual donations are collected or processed. Any resemblance to actual billionaire-making ventures is purely aspirational. Faheem is, however, genuinely working on several promising projects — so the spirit is real.
-  </div>
+  <a href="https://buy.stripe.com/28E9AS9cn9fk80e94UfrW09" target="_blank" class="btn-main" style="text-decoration:none;display:inline-block;">Yes, I Want to Make Faheem Rich</a>
 </section>
 
 <div class="gold-line"></div>
@@ -643,73 +640,11 @@
   <span>Est. Today · Dissolving Upon Billionaire Status</span>
 </footer>
 
-<div class="donate-modal" id="modal">
-  <div class="modal-box">
-    <h3>You're a Hero.</h3>
-    <p>Your generous contribution of</p>
-    <div class="modal-selected" id="modal-amount">$20</div>
-    <p>is about to change the trajectory of history. Faheem thanks you from the bottom of his (soon-to-be) billionaire heart.</p>
-    <button class="btn-main" onclick="confirmDonate()" style="width:100%;">Confirm & Change the World</button>
-    <br>
-    <button class="modal-close" onclick="closeModal()">Actually, maybe not today</button>
-  </div>
-</div>
 
 <script>
+  // Progress counter (visual only)
   let raised = 0;
   let donors = 0;
-  const goal = 1000000000;
-
-  function animateCounter(from, to, el) {
-    const duration = 1200;
-    const start = performance.now();
-    function step(now) {
-      const t = Math.min((now - start) / duration, 1);
-      const ease = 1 - Math.pow(1 - t, 3);
-      const val = Math.round(from + (to - from) * ease);
-      el.textContent = '$' + val.toLocaleString();
-      if (t < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  }
-
-  function openModal(amount) {
-    document.getElementById('modal-amount').textContent = amount;
-    document.getElementById('modal').classList.add('open');
-  }
-
-  function closeModal() {
-    document.getElementById('modal').classList.remove('open');
-  }
-
-  function confirmDonate() {
-    const amt = document.getElementById('modal-amount').textContent;
-    const nums = { '$5': 5, '$20': 20, '$100': 100, '$1,000': 1000 };
-    const add = nums[amt] || 20;
-    const prev = raised;
-    raised += add;
-    donors += 1;
-
-    const pct = (raised / goal) * 100;
-    document.getElementById('progress-fill').style.width = Math.max(pct, 0.0001) + '%';
-    document.getElementById('pct-label').textContent = pct.toFixed(6) + '% funded';
-    document.getElementById('donors-label').textContent = donors + ' believer' + (donors !== 1 ? 's' : '');
-
-    animateCounter(prev, raised, document.getElementById('raised-counter'));
-    closeModal();
-
-    setTimeout(() => {
-      alert('Thank you! Your belief has been registered. The billion is a little closer now.\n\n(This is satire — no real transaction occurred.)');
-    }, 300);
-  }
-
-  document.getElementById('modal').addEventListener('click', function(e) {
-    if (e.target === this) closeModal();
-  });
-
-  document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeModal();
-  });
 </script>
 </body>
 </html>
