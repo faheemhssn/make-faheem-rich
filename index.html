@@ -593,6 +593,95 @@
     line-height: 1.65;
     font-weight: 300;
   }
+  .audio-bar {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    background: rgba(10,10,10,0.92);
+    border: 1px solid rgba(201,168,76,0.3);
+    backdrop-filter: blur(12px);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 320px;
+    max-width: 480px;
+    width: 90%;
+    transition: opacity 0.4s, transform 0.4s;
+  }
+
+  .audio-bar.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(20px);
+  }
+
+  .audio-btn {
+    background: #c9a84c;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: #0a0a0a;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+  }
+
+  .audio-btn:hover { background: #f5d98b; }
+
+  .audio-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .audio-title {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(240,237,230,0.6);
+    display: block;
+    margin-bottom: 0.4rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .audio-progress-track {
+    height: 3px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    cursor: pointer;
+    position: relative;
+  }
+
+  .audio-progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #c9a84c, #f5d98b);
+    border-radius: 2px;
+    transition: width 0.5s linear;
+    pointer-events: none;
+  }
+
+  .audio-close {
+    background: none;
+    border: none;
+    color: rgba(240,237,230,0.3);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.25rem;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+
+  .audio-close:hover { color: rgba(240,237,230,0.7); }
 </style>
 </head>
 <body>
@@ -603,6 +692,21 @@
   <div class="logo">The Faheem Initiative</div>
   <div class="tagline-top">Wealth With Purpose</div>
 </header>
+
+<!-- Audio Player -->
+<div class="audio-bar" id="audioBar">
+  <button class="audio-btn" id="audioBtn" onclick="toggleAudio()">
+    <span id="audioIcon">&#9646;&#9646;</span>
+  </button>
+  <div class="audio-info">
+    <span class="audio-title">A Message from Faheem</span>
+    <div class="audio-progress-track" onclick="seekAudio(event)">
+      <div class="audio-progress-fill" id="audioProgress"></div>
+    </div>
+  </div>
+  <button class="audio-close" onclick="closeAudio()">✕</button>
+</div>
+<audio id="faheemAudio" src="faheem-voice.mp3"></audio>
 
 <section class="hero">
   <div class="eyebrow">A Movement Rooted in Compassion</div>
@@ -814,10 +918,62 @@
   ctx.textBaseline = 'middle';
   ctx.fillText('$1B', cx, cy - 8);
 
-  ctx.fillStyle = 'rgba(240,237,230,0.4)';
-  ctx.font = '11px sans-serif';
-  ctx.letterSpacing = '3px';
-  ctx.fillText('GOAL', cx, cy + 16);
+  // Audio player
+  const audio = document.getElementById('faheemAudio');
+  const btn = document.getElementById('audioBtn');
+  const icon = document.getElementById('audioIcon');
+  const progress = document.getElementById('audioProgress');
+  const bar = document.getElementById('audioBar');
+
+  function toggleAudio() {
+    if (audio.paused) {
+      audio.play();
+      icon.innerHTML = '&#9646;&#9646;';
+    } else {
+      audio.pause();
+      icon.innerHTML = '&#9654;';
+    }
+  }
+
+  function closeAudio() {
+    audio.pause();
+    bar.classList.add('hidden');
+  }
+
+  function seekAudio(e) {
+    const track = e.currentTarget;
+    const rect = track.getBoundingClientRect();
+    const pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  }
+
+  audio.addEventListener('timeupdate', () => {
+    if (audio.duration) {
+      progress.style.width = (audio.currentTime / audio.duration * 100) + '%';
+    }
+  });
+
+  audio.addEventListener('ended', () => {
+    icon.innerHTML = '&#9654;';
+    progress.style.width = '0%';
+  });
+
+  // Autoplay on first user interaction (browser policy)
+  document.addEventListener('click', function startAudio() {
+    audio.play().then(() => {
+      icon.innerHTML = '&#9646;&#9646;';
+    }).catch(() => {});
+    document.removeEventListener('click', startAudio);
+  }, { once: true });
+
+  // Try immediate autoplay
+  window.addEventListener('load', () => {
+    audio.play().then(() => {
+      icon.innerHTML = '&#9646;&#9646;';
+    }).catch(() => {
+      icon.innerHTML = '&#9654;';
+    });
+  });
 </script>
 </body>
 </html>
